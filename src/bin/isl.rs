@@ -26,8 +26,8 @@ fn main() {
 fn multiplex(args: Vec<String>, database: Database) {
     match (args.len(), args.get(1).map(|x| x.as_str())) {
         (1, _) => {
-            let temp_file_contents = TempFile::new();
-            open_neovim(&temp_file_contents.path());
+            let temp_file_contents = TempFile::default();
+            open_neovim(temp_file_contents.path());
 
             let temp_file_contents = temp_file_contents.contents();
             if temp_file_contents.trim().is_empty() {
@@ -42,7 +42,6 @@ fn multiplex(args: Vec<String>, database: Database) {
         (2, Some("version")) | (2, Some("--version")) => {
             let version = env!("CARGO_PKG_VERSION");
             println!("{PKG_NAME} version {version}");
-            return;
         }
         (2, Some("help")) | (2, Some("--help")) => {
             println!("{PKG_NAME} - A simple command-line logging tool using neovim");
@@ -52,7 +51,6 @@ fn multiplex(args: Vec<String>, database: Database) {
             println!("  {PKG_NAME} --help    Show this help message.");
             println!("  {PKG_NAME} --show    Show the log database.");
             println!("  {PKG_NAME} --version Show version information.");
-            return;
         }
         _ => {
             println!("Unknown command. Use --help for usage information.");

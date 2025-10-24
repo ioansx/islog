@@ -8,14 +8,6 @@ pub struct TempFile {
 }
 
 impl TempFile {
-    pub fn new() -> Self {
-        let now = now_timestamp_nanos();
-        let ramdon_seed = random_seed();
-        let path_str = format!("/tmp/{BIN_NAME}-{now}-{ramdon_seed}.txt");
-        let path = PathBuf::from(&path_str);
-        TempFile { path }
-    }
-
     pub fn path(&self) -> &Path {
         &self.path
     }
@@ -25,12 +17,24 @@ impl TempFile {
     }
 }
 
+impl Default for TempFile {
+    fn default() -> Self {
+        let now = now_timestamp_nanos();
+        let ramdon_seed = random_seed();
+        let path_str = format!("/tmp/{BIN_NAME}-{now}-{ramdon_seed}.txt");
+        let path = PathBuf::from(&path_str);
+        TempFile { path }
+    }
+}
+
 impl Drop for TempFile {
     fn drop(&mut self) {
-        if self.path.exists() {
-            if let Err(e) = std::fs::remove_file(&self.path) {
-                eprintln!("should remove temporaty file: {e}");
-            }
+        if !self.path.exists() {
+            return;
+        }
+
+        if let Err(e) = std::fs::remove_file(&self.path) {
+            eprintln!("should remove temporaty file: {e}");
         }
     }
 }

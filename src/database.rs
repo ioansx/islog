@@ -37,7 +37,7 @@ impl Database {
 }
 
 fn init_database(xdg_data_home: &Path) -> PathBuf {
-    let log_file_path_name = create_log_file_path_name(&xdg_data_home);
+    let log_file_path_name = create_log_file_path_name(xdg_data_home);
     let log_file_path = Path::new(&log_file_path_name);
 
     if !log_file_path.exists() {
@@ -47,7 +47,7 @@ fn init_database(xdg_data_home: &Path) -> PathBuf {
                 .expect("LOG.md should have a directory parent"),
         )
         .expect("failed to create directories for log file");
-        File::create(&log_file_path).expect("LOG.md should be always created");
+        File::create(log_file_path).expect("LOG.md should be always created");
     }
 
     log_file_path.to_path_buf()
