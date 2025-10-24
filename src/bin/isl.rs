@@ -4,7 +4,7 @@ use islog::{
     constants::{HOME, PKG_NAME, XDG_DATA_HOME},
     database::Database,
     nvim::open_neovim,
-    temp_file::create_temp_file,
+    temp_file::TempFile,
     xdg::default_xdg_data_home,
 };
 
@@ -26,20 +26,18 @@ fn main() {
 fn multiplex(args: Vec<String>, database: Database) {
     match (args.len(), args.get(1).map(|x| x.as_str())) {
         (1, _) => {
-            let temp_file_path = create_temp_file();
+            let temp_file_contents = TempFile::new();
+            open_neovim(&temp_file_contents.path());
 
-            open_neovim(&temp_file_path);
-
-            let temp_file = std::fs::read_to_string(&temp_file_path)
-                .expect("failed to read temporary file content");
-
-            std::fs::remove_file(&temp_file_path).expect("failed to remove temporary file");
-
-            if temp_file.trim().is_empty() {
+            let temp_file_contents = temp_file_contents.contents();
+            if temp_file_contents.trim().is_empty() {
                 return;
             }
 
-            database.update(temp_file);
+            database.update(temp_file_contents);
+        }
+        (2, Some("show")) | (2, Some("--show")) => {
+            open_neovim(database.path());
         }
         (2, Some("version")) | (2, Some("--version")) => {
             let version = env!("CARGO_PKG_VERSION");
@@ -55,9 +53,6 @@ fn multiplex(args: Vec<String>, database: Database) {
             println!("  {PKG_NAME} --show    Show the log database.");
             println!("  {PKG_NAME} --version Show version information.");
             return;
-        }
-        (2, Some("show")) | (2, Some("--show")) => {
-            open_neovim(database.path());
         }
         _ => {
             println!("Unknown command. Use --help for usage information.");
