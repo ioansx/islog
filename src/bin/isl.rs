@@ -33,12 +33,11 @@ fn multiplex(args: Vec<String>, database: Database) {
             let temp_file = std::fs::read_to_string(&temp_file_path)
                 .expect("failed to read temporary file content");
 
+            std::fs::remove_file(&temp_file_path).expect("failed to remove temporary file");
+
             if temp_file.trim().is_empty() {
-                std::fs::remove_file(&temp_file_path).expect("failed to remove temporary file");
                 return;
             }
-
-            std::fs::remove_file(&temp_file_path).expect("failed to remove temporary file");
 
             database.update(temp_file);
         }
