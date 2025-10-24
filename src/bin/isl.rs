@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use islog::{
     constants::{HOME, XDG_DATA_HOME},
-    create_temp_file,
     database::Database,
     nvim::open_neovim,
+    temp_file::create_temp_file,
     xdg::default_xdg_data_home,
 };
 
