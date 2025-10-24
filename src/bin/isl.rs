@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use islog::{
-    constants::{HOME, XDG_DATA_HOME},
+    constants::{HOME, PKG_NAME, XDG_DATA_HOME},
     database::Database,
     nvim::open_neovim,
     temp_file::create_temp_file,
@@ -43,17 +43,17 @@ fn multiplex(args: Vec<String>, database: Database) {
         }
         (2, Some("version")) | (2, Some("--version")) => {
             let version = env!("CARGO_PKG_VERSION");
-            println!("islog version {version}");
+            println!("{PKG_NAME} version {version}");
             return;
         }
         (2, Some("help")) | (2, Some("--help")) => {
-            println!("islog - A simple command-line logging tool using neovim");
+            println!("{PKG_NAME} - A simple command-line logging tool using neovim");
             println!();
             println!("Usage:");
-            println!("  islog           Open Neovim to add a new log entry.");
-            println!("  islog --help    Show this help message.");
-            println!("  islog --show    Show the log database.");
-            println!("  islog --version Show version information.");
+            println!("  {PKG_NAME}           Open Neovim to add a new log entry.");
+            println!("  {PKG_NAME} --help    Show this help message.");
+            println!("  {PKG_NAME} --show    Show the log database.");
+            println!("  {PKG_NAME} --version Show version information.");
             return;
         }
         (2, Some("show")) | (2, Some("--show")) => {

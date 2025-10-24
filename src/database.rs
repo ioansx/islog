@@ -21,8 +21,10 @@ impl Database {
     }
 
     pub fn update(&self, new_content: String) {
-        let log_file_content =
+        let old_content =
             read_to_string(&self.log_file_path).expect("failed to read log file content");
+
+        let content = format_content(new_content, old_content);
 
         let mut log_file = std::fs::OpenOptions::new()
             .write(true)
@@ -30,11 +32,7 @@ impl Database {
             .open(&self.log_file_path)
             .expect("failed to open log file for appending");
 
-        Write::write_all(&mut log_file, new_content.as_bytes())
-            .expect("failed to write to log file");
-        Write::write_all(&mut log_file, b"\n").expect("failed to write newline to log file");
-        Write::write_all(&mut log_file, log_file_content.as_bytes())
-            .expect("failed to append old log file content");
+        Write::write_all(&mut log_file, content.as_bytes()).expect("failed to write to log file");
     }
 }
 
@@ -60,4 +58,8 @@ fn create_log_file_path_name(xdg_data_home: &Path) -> String {
         .to_str()
         .expect("XDG_DATA_HOME should be valid str");
     format!("{xdg_data_home}/{BIN_NAME}/{DATABASE_NAME}",)
+}
+
+fn format_content(new_content: String, old_content: String) -> String {
+    format!("{new_content}\n{old_content}")
 }
