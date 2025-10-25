@@ -31,10 +31,10 @@ fn main() -> Resultx<()> {
 fn multiplex(args: Vec<String>, database: Database) -> Resultx<()> {
     match (args.len(), args.get(1).map(|x| x.as_str())) {
         (1, _) => {
-            let temp_file_contents = TempFile::default();
-            open_neovim(temp_file_contents.path())?;
+            let temp_file = TempFile::default();
+            open_neovim(temp_file.path())?;
 
-            let temp_file_contents = temp_file_contents.contents()?;
+            let temp_file_contents = temp_file.contents()?;
             if temp_file_contents.trim().is_empty() {
                 return Ok(());
             }

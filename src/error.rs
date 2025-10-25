@@ -99,7 +99,7 @@ impl Display for Kndx {
 
 fn collect_std_backtrace(backtrace: &Backtrace) -> Vec<String> {
     fn is_dependency_code(symbol_line: &str, at_line: Option<&str>) -> bool {
-        let project = "pyrope";
+        let project = "islog";
         if symbol_line.contains(project) || at_line.is_some_and(|x| x.contains(project)) {
             return false;
         }
