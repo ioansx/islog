@@ -1,12 +1,24 @@
 use std::path::Path;
 
-pub fn open_neovim(file_path: &Path) {
-    let child = std::process::Command::new("nvim")
+use crate::error::{Errx, Resultx};
+
+pub fn open_neovim(file_path: &Path) -> Resultx<()> {
+    let child_result = std::process::Command::new("nvim")
         .arg(file_path)
         .spawn()
-        .expect("neovim should open; is it installed?");
+        .map_err(|e| Errx::e_io(e, "neovim should open; is it installed?"));
 
-    if let Err(e) = child.wait_with_output() {
-        eprintln!("neovim process failed: {e}");
+    match child_result {
+        Ok(mut child) => {
+            let status = child
+                .wait()
+                .map_err(|e| Errx::e_io(e, "waiting neovim process"))?;
+            if status.success() {
+                Ok(())
+            } else {
+                Err(Errx::g(format!("neovim exited with an error: {status}")))
+            }
+        }
+        Err(e) => Err(e),
     }
 }

@@ -3,12 +3,13 @@ use std::path::PathBuf;
 use islog::{
     constants::{HOME, PKG_NAME, XDG_DATA_HOME},
     database::Database,
+    error::Resultx,
     nvim::open_neovim,
     temp_file::TempFile,
     xdg::default_xdg_data_home,
 };
 
-fn main() {
+fn main() -> Resultx<()> {
     let args = std::env::args().collect::<Vec<String>>();
 
     let xdg_data_home = std::env::var(XDG_DATA_HOME)
@@ -18,26 +19,30 @@ fn main() {
             default_xdg_data_home(&home)
         });
 
-    let database = Database::init(&xdg_data_home);
+    let database = Database::init(&xdg_data_home)?;
 
-    multiplex(args, database);
+    if let Err(e) = multiplex(args, database) {
+        e.log();
+    }
+
+    Ok(())
 }
 
-fn multiplex(args: Vec<String>, database: Database) {
+fn multiplex(args: Vec<String>, database: Database) -> Resultx<()> {
     match (args.len(), args.get(1).map(|x| x.as_str())) {
         (1, _) => {
             let temp_file_contents = TempFile::default();
-            open_neovim(temp_file_contents.path());
+            open_neovim(temp_file_contents.path())?;
 
-            let temp_file_contents = temp_file_contents.contents();
+            let temp_file_contents = temp_file_contents.contents()?;
             if temp_file_contents.trim().is_empty() {
-                return;
+                return Ok(());
             }
 
-            database.update(temp_file_contents);
+            database.update(temp_file_contents)?;
         }
         (2, Some("show")) | (2, Some("--show")) => {
-            open_neovim(database.path());
+            open_neovim(database.path())?;
         }
         (2, Some("version")) | (2, Some("--version")) => {
             let version = env!("CARGO_PKG_VERSION");
@@ -56,4 +61,6 @@ fn multiplex(args: Vec<String>, database: Database) {
             println!("Unknown command. Use --help for usage information.");
         }
     }
+
+    Ok(())
 }

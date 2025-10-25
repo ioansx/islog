@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::constants::BIN_NAME;
+use crate::error::{Errx, Resultx};
 use crate::{random::random_seed, time::now_timestamp_nanos};
 
 pub struct TempFile {
@@ -12,8 +13,9 @@ impl TempFile {
         &self.path
     }
 
-    pub fn contents(&self) -> String {
-        std::fs::read_to_string(&self.path).expect("failed to read temporary file content")
+    pub fn contents(&self) -> Resultx<String> {
+        std::fs::read_to_string(&self.path)
+            .map_err(|e| Errx::e_io(e, format!("reading {:?}", self.path)))
     }
 }
 
