@@ -112,12 +112,12 @@ fn format_content(
 
             // let new_lines_filtered = Vec::with_capacity(new_content_lines.len());
 
-            let mut cnt = 0;
-            old_content_lines.insert(idx_of_subtitle + cnt, newline());
+            let mut cnt = 1;
             for new_line in new_content_lines {
-                cnt += 1;
                 old_content_lines.insert(idx_of_subtitle + cnt, new_line);
+                cnt += 1;
             }
+
             old_content_lines.join("\n")
         }
         (true, false) => {
@@ -132,11 +132,10 @@ fn format_content(
                 .position(|line| line == &subtitle_current_day)
                 .unwrap_or(0);
 
-            let mut cnt = 0;
-            old_content_lines.insert(idx_of_subtitle + cnt, newline());
+            let mut cnt = 1;
             for new_line in new_content_lines {
-                cnt += 1;
                 old_content_lines.insert(idx_of_subtitle + cnt, new_line);
+                cnt += 1;
             }
             old_content_lines.join("\n")
         }
@@ -145,9 +144,22 @@ fn format_content(
                 .into_iter()
                 .chain(new_content_lines.into_iter())
                 .collect();
-            let new_content = new_content_lines.join("\n");
-            let old_content = old_content_lines.join("\n");
-            format!("{new_content}\n{old_content}")
+
+            let idx_of_title = old_content_lines
+                .iter()
+                .position(|line| line == TITLE)
+                .unwrap_or(0);
+
+            let mut cnt = 1;
+            for new_line in new_content_lines {
+                old_content_lines.insert(idx_of_title + cnt, new_line);
+                cnt += 1;
+            }
+            old_content_lines.join("\n")
+
+            // let new_content = new_content_lines.join("\n");
+            // let old_content = old_content_lines.join("\n");
+            // format!("{new_content}\n{old_content}")
         }
     }
 }
