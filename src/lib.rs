@@ -6,4 +6,6 @@ pub mod temp_file;
 pub mod xdg;
 
 mod random;
+mod sanitizer;
 mod time;
+mod validator;

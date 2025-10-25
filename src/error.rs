@@ -52,6 +52,10 @@ impl Errx {
         Self::new(Some(Box::new(src)), Kndx::Io(msg.into()))
     }
 
+    pub fn validation(msg: impl Into<String>) -> Self {
+        Self::new(None, Kndx::Validation(msg.into()))
+    }
+
     pub fn chain(&self) -> Vec<String> {
         let mut chain: Vec<String> = Vec::new();
         let mut source = Some(self as &dyn Error);
@@ -86,6 +90,7 @@ impl Error for Errx {
 pub enum Kndx {
     G(String),
     Io(String),
+    Validation(String),
 }
 
 impl Display for Kndx {
@@ -93,6 +98,7 @@ impl Display for Kndx {
         match self {
             Kndx::G(msg) => write!(f, "generic error: {}", msg),
             Kndx::Io(msg) => write!(f, "IO error: {}", msg),
+            Kndx::Validation(msg) => write!(f, "validation error: {}", msg),
         }
     }
 }

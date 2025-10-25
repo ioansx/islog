@@ -39,7 +39,12 @@ fn multiplex(args: Vec<String>, database: Database) -> Resultx<()> {
                 return Ok(());
             }
 
-            database.update(temp_file_contents)?;
+            if let Err(e) = database.update(temp_file_contents.trim().to_owned()) {
+                e.log();
+                println!("---\n");
+                println!("Here's the content you wanted to add to the log:");
+                println!("\n\n{temp_file_contents}");
+            }
         }
         (2, Some("show")) | (2, Some("--show")) => {
             open_neovim(database.path())?;
